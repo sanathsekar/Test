@@ -1,0 +1,25 @@
+[{
+   "name":"sanath",
+   "age":25,
+   "role":"softwareengineer",
+   "gender":"male"
+   },
+   {
+    "name":"manoj",
+   "age":27,
+   "role":"softwareengineer",
+   "gender":"male"
+   },
+   {
+   "name":"proonai",
+   "age":27,
+   "role":"administrator",
+   "gender":"female"
+   },
+   {
+   "name":"Naveen",
+   "age":54,
+   "role":"Manager",
+   "gender":"Male"
+   }
+]
