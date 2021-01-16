@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="18fc865d-6a04-4327-8c42-578eedb4cf49" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<flow name="test1Flow" doc:id="02387b9b-e5c1-4318-b381-27c608601155" >
+		<http:listener doc:name="Listener" doc:id="cec35662-f03b-4777-9d49-95ab90f2c86c" config-ref="HTTP_Listener_config" path="/supplier"/>
+		<set-variable value="#[attributes.queryParams.id]" doc:name="Set Variable" doc:id="c2adcc64-fe03-4217-bb0a-5db85b2e6c2d" variableName="id"/>
+		<logger level="INFO" doc:name="Logger" doc:id="fe834863-c4ce-4ddb-a84e-48fbe4b77943" message="#[vars.id]"/>
+		<ee:transform doc:name="Transform Message" doc:id="c47ca602-c32e-4392-87e9-28f1b388a784">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+
+payload//{"Name":"diya","Gender":"Female"}
+//payload ++ "kumar"
+//["0","1"]++["2","3"]
+//{"sanath":"rahul"}--{"sekar":"dravid"}
+//{}++{},[]++[]
+//"sanath"++"sekar"
+//{"sanath":"rahul"}++{"sekar":"dravid"}
+//typeOf([{"fruits":"oranges"},{"id":333},{"name":"sanath"}])
+//typeOf({"sanath":"sekar"})
+//12345 is Number
+//"sanath" is String
+//[{"fruits":"oranges"},{"id":"333"},{"name":"sanath"}] is Object
+//payload{}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-payload value='#[%dw 2.0
+output application/json
+---
+payload]' doc:name="Set Payload" doc:id="748a85ae-30b0-4504-9563-d56c3a32283d" />
+		<ee:transform doc:name="Transform Message" doc:id="ab2abf03-594a-4d40-a935-305ebb0466fe">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+//vars.id as Number + 2
+//vars.id as String ++ "_IND"
+//if(vars.id is Number)("Id is Number") else ("Id is String")
+//isEmpty(vars.id)
+//if(vars.id == null) ("id is empty") else ("id got some value:" ++ vars.id)
+//if(!isEmpty(vars.id))("id got some value:" ++ vars.id) else ("id is empty") 
+//now() as String {"format": "yyyy-dd-mm"}
+//now() as String {"format": "hh:m:s"}
+//now().dayOfWeek
+//now().dayOfYear
+//now().quarter
+//now().year
+//now().month
+//now().day
+//now() as Number
+ //now().hour
+ //now().minutes
+ //[{"name":"sanath","age":25},{"name":"varun","age":30},{"name":"Sandeep","age":35}] orderBy (person)-> person.age
+ //{"name": lower("SANATH")}
+ //{"name": upper("sanath")}
+ //["sanath","kaushik","prassana"] map (value,index)-> {(index):value}
+ //[ isEven(2), isOdd(4), isBlank("sanath") ]
+ //["Bond", "James", "Bond"] find "Bond"
+ //[{ "name": "Foo", "language": "Java" },   { "name": "Bar", "language": "Scala" },   { "name": "FooBar", "language": "Java" }] groupBy (item) -> item.language
+//[ { "a" : 1 }, { "a" : 3 }, { "a" : 2 } ] maxBy ((item) -> item.a)
+//log("WARNING", "Houston, we have a problem.")
+//{"a":"b","c":"d"} mapObject (value,key,index) -> { (index) : { (value):key} }
+ //{"name":"sanath","age":25,"place":"chennai","name":"sanath"} distinctBy (value) -> {"unique":value}
+ //{"name":"sanath","age":25,"place":"chennai","name":"sanath"} - "place"
+ //if(Payload.Gender == " Male")("Gender is male :" " MR"++ "Sanath")else ("Gender is female:" "MRs"++"sanath")
+ //if(payload.Gender == "Male")({"name":"Mr." ++ payload.Name})else ({"name":"MRs." ++ payload.Name})
+ //[["a","b","c"] joinBy "''",["m","n","o"] joinBy "",["x","y","z"]joinBy ""]
+ //{"employee": [{"name":"sanath","age":25},{"name":"varun","age":30},{"name":"Sandeep","age":35}] filterObject ((value,key,index)-> index== 25)}
+ //[["a","b","c"] joinBy "''",["m","n","o"]++["x","y","z"]]
+ //{"employee":payload.employee[2]}
+// { "a" : "1", "b" : "2", "c" : "3" }  filterObject ((value)-> value=="2")
+//["07","10","2020"] joinBy "-"
+ //typeOf({"name":"new"})
+ //{"employees" replace "employees" with ("employees_list") :[    
+  //sizeOf({ "sum": 10, "concat": "1234", "emptyList": "abc"})
+ //"employee_List": payload.employees
+ ["07","10","20"++"20"] joinBy "-"
+    ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
