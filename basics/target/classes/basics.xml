@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="94c54003-8e39-4a7c-8b40-00f03ad1e8f8" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<flow name="basicsFlow" doc:id="509c6634-3a68-4533-8f5f-ad8ecadb9098" >
+		<http:listener doc:name="Listener" doc:id="b2a2e079-58fc-4947-b9de-65063a091f10" config-ref="HTTP_Listener_config" path="/vendor/{id}"/>
+		<logger level="INFO" doc:name="Logger_uriparams" doc:id="eccefcdc-39aa-4402-b0a8-eea2f19feddf" message='#[attributes.uriParams.id]'/>
+		<logger level="INFO" doc:name="Logger_queryparams" doc:id="4e3fc768-bad7-44d7-b9f1-96c081e51609" message="#[attributes.queryParams.name]"/>
+		<logger level="INFO" doc:name="Logger_header" doc:id="48b19a9f-f10a-4eb1-b020-db85828c1946" message="#[attributes.headers.password]"/>
+		<set-payload value='#[%dw 2.0
+
+output application/json
+---
+{
+	"firstName": "John",
+	"lastName": "Smith",
+	"isAlive": true,
+	"age": 27,
+	"address": {
+		"streetAddress": "21 2nd Street",
+		"city": "New York",
+		"state": "NY",
+		"postalCode": "10021-3100"
+	},
+	"phoneNumbers": [
+		{
+			"type": "home",
+			"number": "212 555-1234"
+		},
+		{
+			"type": "office",
+			"number": "646 555-4567"
+		}
+	],
+	"children": [],
+	"spouse": null
+}]' doc:name="Set Payload" doc:id="b65e6f08-752a-481c-9ff0-3f861a9ea631" />
+		<set-variable value="#[payload.lastName]" doc:name="Set Variable" doc:id="b50bb1cd-ec45-49af-9292-d3bdefce6551" variableName="lastName"/>
+		<logger level="INFO" doc:name="Logger" doc:id="ac748a53-ff75-49b2-8cbc-c0a8a36a3c0d" message="#[vars.lastName]"/>
+		<ee:transform doc:name="Transform Message" doc:id="a81522b7-768d-42b0-8239-998b38ea5ee0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+ "FullDetails": payload,
+ "lastName": vars.lastName
+ 
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
